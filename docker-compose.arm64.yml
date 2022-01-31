@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  database:
+    container_name: crash_mapping_database
+    build: x86_64_database
+    env_file:
+      - .env
+    volumes: 
+      - crash_mapping_postgres_pgdata:/var/lib/postgresql/data
+    ports:
+      # be careful to not expose these resources on the COA network
+      - 127.0.0.1:5432:5432

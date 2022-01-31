@@ -1,0 +1,4 @@
+version: '3.7'
+volumes:
+  crash_mapping_postgres_pgdata:
+    name: crash_mapping_postgres_pgdata
