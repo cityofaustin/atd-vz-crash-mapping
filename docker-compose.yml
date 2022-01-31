@@ -1,4 +1,11 @@
 version: '3.7'
+services:
+  utilities:
+    container_name: crash_mapping_utilities
+    build: utilities
+    env_file:
+      - .env
+    command: "tail -f /dev/null"
 volumes:
   crash_mapping_postgres_pgdata:
     name: crash_mapping_postgres_pgdata
