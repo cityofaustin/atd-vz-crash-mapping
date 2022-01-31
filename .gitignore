@@ -1,6 +1,7 @@
 .env
 .DS_STORE
 utilities/tmp/*
+!utilities/tmp/README.md
 
 # Vim stuff
 
