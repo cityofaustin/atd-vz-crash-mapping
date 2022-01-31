@@ -2,6 +2,7 @@
 
 
 ## Useful commands
+### Substitute architecture specific YAML file as needed
 * Build images for X86: `docker-compose -f ./docker-compose.yml -f docker-compose.x86-64.yml build`
 * Start containers: `docker-compose -f ./docker-compose.yml -f docker-compose.x86-64.yml up -d`
 * Stop containers: `docker-compose -f ./docker-compose.yml -f docker-compose.x86-64.yml stop`
