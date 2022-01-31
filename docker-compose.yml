@@ -8,6 +8,7 @@ services:
     command: "tail -f /dev/null"
     volumes:
       - ./utilities/utilities:/root/utilities
+      - ./utilities/tmp:/root/tmp
 volumes:
   crash_mapping_postgres_pgdata:
     name: crash_mapping_postgres_pgdata
