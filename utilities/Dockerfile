@@ -9,4 +9,5 @@ RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | te
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 RUN apt-get update
 RUN apt-get install -y postgresql-client-13
+RUN apt-get install -y awscli
 WORKDIR /root/utilities
