@@ -9,6 +9,7 @@ services:
     volumes:
       - ./utilities/utilities:/root/utilities
       - ./utilities/tmp:/root/tmp
+      - ./utilities/diagram_data:/root/diagram_data
 volumes:
   crash_mapping_postgres_pgdata:
     name: crash_mapping_postgres_pgdata
