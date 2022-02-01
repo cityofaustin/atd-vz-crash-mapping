@@ -2,6 +2,8 @@
 .DS_STORE
 utilities/tmp/*
 !utilities/tmp/README.md
+utilities/diagram_data/*
+!utilities/diagram_data/README.md
 
 # Vim stuff
 
