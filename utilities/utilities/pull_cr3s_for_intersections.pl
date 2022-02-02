@@ -10,6 +10,7 @@ my $pg  = DBI->connect("DBI:Pg:dbname=" . $ENV{'POSTGRES_DB'} . ";host=" . $ENV{
 my $pwd = `pwd`;
 chomp($pwd);
 
+# this should be an argument
 my @aois = (44);
 
 my $sql = "select * from diagram_aoi where id in (" . join (',', @aois) . ")";
