@@ -30,7 +30,7 @@ while (my $aoi = $query->fetchrow_hashref)
     $aoi->{'name'} =~ s/\&/and/g;
     $aoi->{'name'} =~ s/\//-/g;
     $aoi->{'name'} =~ s/\s/_/g;
-    my $path = $pwd . '/CR3s/' . $aoi->{'name'} . '/Section_' . $intersection->{'id'} . '/';
+    my $path = '/root/CR3s_and_Spreadsheets/CR3s/' . $aoi->{'name'} . '/Section_' . $intersection->{'id'} . '/';
     print $path, "\n";
 
 
@@ -124,7 +124,7 @@ SQL
     while (my $crash = $query->fetchrow_hashref)
       {
       #print $crash->{'crash_id'}, "\n";
-      my $cmd = 'docker run --rm -it -v ~/.aws:/root/.aws -v ' . $path . ':/mnt amazon/aws-cli s3 cp s3://atd-vision-zero-editor/production/cris-cr3-files/' . $crash->{'crash_id'} . '.pdf /mnt/' . $crash->{'crash_id'} . '.pdf';
+      my $cmd = 'aws s3 cp s3://atd-vision-zero-editor/production/cris-cr3-files/' . $crash->{'crash_id'} . '.pdf ' . $path . 'CR3s_and_Spreadsheets/' . $crash->{'crash_id'} . '.pdf';
       print $cmd, "\n";
       `$cmd`;
       }
