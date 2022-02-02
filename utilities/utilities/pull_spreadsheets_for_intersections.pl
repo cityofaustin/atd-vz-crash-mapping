@@ -32,7 +32,7 @@ while (my $aoi = $query->fetchrow_hashref)
     $aoi->{'name'} =~ s/\&/and/g;
     $aoi->{'name'} =~ s/\//-/g;
     $aoi->{'name'} =~ s/\s/_/g;
-    my $path = $pwd . '/CR3s/' . $aoi->{'name'} . '/Section_' . $intersection->{'id'} . '/';
+    my $path = '/root/CR3s_and_Spreadsheets/spreadsheets/' . $aoi->{'name'} . '/Section_' . $intersection->{'id'} . '/';
     #print $path, "\n";
 
 
