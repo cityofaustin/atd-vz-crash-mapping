@@ -10,10 +10,7 @@ RUN curl -sL https://deb.nodesource.com/setup_15.x | bash -
 RUN apt-get update
 RUN apt-get install -y nodejs
 RUN apt-get install -y gcc g++ make
-RUN curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update
-RUN apt-get install -y yarn
+RUN npm install --global yarn
 RUN yarn global add parcel-bundler
 RUN apt-get install -y apache2 libdbi-perl libdbd-pg-perl libjson-perl
 #COPY ./app /root/html/
