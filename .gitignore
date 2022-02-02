@@ -4,6 +4,10 @@ utilities/tmp/*
 !utilities/tmp/README.md
 utilities/diagram_data/*
 !utilities/diagram_data/README.md
+utilities/CR3s_and_Spreadsheets/CR3s/*
+utilities/CR3s_and_Spreadsheets/Spreadsheets/*
+!utilities/CR3s_and_Spreadsheets/CR3s/README.md
+!utilities/CR3s_and_Spreadsheets/Spreadsheets/README.md
 *.qgs~
 
 # Vim stuff
