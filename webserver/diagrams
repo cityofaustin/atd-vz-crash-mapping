@@ -1,0 +1,477 @@
+#!/usr/bin/perl
+
+use strict;
+use JSON;
+use CGI;
+use Data::Dumper;
+use DBI;
+
+my $pg_dts  = DBI->connect("DBI:Pg:dbname=" . $ENV{'DTS_RR_DB'} . ";host=" . $ENV{'DTS_RR_DB_HOST'} . ";port=" . $ENV{'DTS_RR_DB_PORT'}, $ENV{'DTS_RR_DB_USERNAME'}, $ENV{'DTS_RR_DB_PASSWORD'}, {RaiseError => 1});
+my $pg  = DBI->connect("DBI:Pg:dbname=" . $ENV{'LOCAL_DEV_DB'} . ";host=" . $ENV{'LOCAL_DEV_DB_HOST'} . ";port=" . $ENV{'LOCAL_DEV_DB_PORT'}, $ENV{'LOCAL_DEV_DB_USERNAME'}, $ENV{'LOCAL_DEV_DB_PASSWORD'}, {RaiseError => 1});
+
+print "Content-type: application/json\n\n";
+#print STDERR "\n";
+
+my $json = JSON->new;
+my $q = CGI->new;
+my $parameters = $q->Vars;
+
+#print STDERR Dumper $parameters;
+
+if ($parameters->{'query'} eq 'icon_map') {
+  #my $data = $json->decode($parameters->{'command'});
+  my $aoi = $parameters->{'aoi'};
+  my $sql = "select * from diagram_icon_crash_map";
+  my $query = $pg->prepare($sql);
+  $query->execute();
+  my $map = {};
+  while (my $icon = $query->fetchrow_hashref) {
+    $map->{$icon->{'icon'}} = $icon;
+    }
+  my $result = {icons => $map};
+  print $json->encode($result);
+  }
+
+
+if ($parameters->{'query'} eq 'aoi') {
+  #my $data = $json->decode($parameters->{'command'});
+  my $aoi = $parameters->{'aoi'};
+  my $sql = "
+  SELECT jsonb_build_object(
+    'type',       'Feature',
+    'id',         gid,
+    'geometry',   ST_AsGeoJSON(geometry)::jsonb,
+    'properties', to_jsonb(row) - 'gid' - 'geometry'
+    ) FROM (SELECT id as gid, name, project, ST_Transform(geometry, 3857) as geometry FROM diagram_aoi where id = ?) row;
+  ";
+  my $query = $pg->prepare($sql);
+  $query->execute($aoi);
+  my ($geojson) = $query->fetchrow_array();
+  my $result = {shape => $geojson};
+  print $json->encode($result);
+  }
+
+if ($parameters->{'query'} eq 'get_crash_icon_parameters') {
+  my $data = $json->decode($parameters->{'command'});
+  my $sql = "select c.angle, c.icon, ST_X(geometry) as x, ST_Y(geometry) as y, c.hide_crash
+from diagram_crashes c
+where 1 = 1
+and c.crash_id = ?
+and (c.geometry is not null OR c.hide_crash = 1)
+limit 1";
+  my $query = $pg->prepare($sql);
+  #print STDERR Dumper $data;
+  $query->execute($data->{'crash'});
+  my $result = $query->fetchrow_hashref();
+  #print STDERR Dumper $result if ($data->{'crash'} == 16030823);
+  print $json->encode($result);
+  }
+
+if ($parameters->{'query'} eq 'toggle_crash_visibility') {
+  my $data = $json->decode($parameters->{'command'});
+  print STDERR Dumper $data;
+  my @results = ();
+  my $sql = "update diagram_crashes set hide_crash = ? where crash_id = ? returning crash_id";
+  my $query = $pg->prepare($sql);
+  $query->execute($data->{'hide_crash'}, $data->{'crash'});
+  print $json->encode(\@results);
+  }
+
+if ($parameters->{'query'} eq 'get_crash_icon') {
+  my $data = $json->decode($parameters->{'command'});
+  my $sql = "select diagram_id, icon from latest_crash_data where crash_id = ?";
+  my $query = $pg->prepare($sql);
+  $query->execute($data->{'crash_id'});
+  my $icon = $query->fetchrow_hashref;
+  if (!$icon->{'icon'})
+    {
+    #print STDERR $data->{'crash_id'}, "\n";
+    #print STDERR Dumper $icon;
+    }
+  print $json->encode($icon);
+  }
+
+if ($parameters->{'query'} eq 'set_crash_icon') {
+  my $data = $json->decode($parameters->{'command'});
+  my $sql = "update diagram_crashes set icon = ? where crash_id = ? returning id";
+  my $query = $pg->prepare($sql);
+  $query->execute($data->{'icon'}, $data->{'crash_id'});
+  my $icon = $query->fetchrow_hashref;
+  print $json->encode($icon);
+  }
+
+if ($parameters->{'query'} eq 'get_crash_color') {
+  my $data = $json->decode($parameters->{'command'});
+  my $sql = "select diagram_id, color from latest_crash_data where crash_id = ?";
+  my $query = $pg->prepare($sql);
+  $query->execute($data->{'crash_id'});
+  my $icon = $query->fetchrow_hashref;
+  print $json->encode($icon);
+  }
+
+if ($parameters->{'query'} eq 'set_crash_color') {
+  my $data = $json->decode($parameters->{'command'});
+  my $sql = "update diagram_crashes set color = ? where id = ? returning id";
+  my $query = $pg->prepare($sql);
+  $query->execute($data->{'color'}, $data->{'id'});
+  my $icon = $query->fetchrow_hashref;
+  print $json->encode($icon);
+  }
+
+
+
+if ($parameters->{'query'} eq 'change_crash_icons') {
+  my $data = $json->decode($parameters->{'command'});
+  #print STDERR Dumper $data;
+  my @results = ();
+  foreach my $crash (keys(%{$data->{'icons'}})) {
+    #print STDERR $crash, ": ", $data->{'icons'}->{$crash}, "\n";
+    my $sql = "update diagram_crashes set icon = ? where crash_id = ? returning crash_id";
+    my $query = $pg->prepare($sql);
+    $query->execute($data->{'icons'}->{$crash}, $crash);
+    my $result = $query->fetchrow_hashref;
+    push @results, $result;
+    }
+  print $json->encode(\@results);
+  }
+
+if ($parameters->{'query'} eq 'change_crash_location') {
+  my $data = $json->decode($parameters->{'command'});
+  my $sql = "update diagram_crashes set geometry =  ST_Transform(ST_PointFromText(?, 3857), 4326) where crash_id = ? returning crash_id";
+  my $query = $pg->prepare($sql);
+  $query->execute('POINT(' . $data->{'x'} . ' ' . $data->{'y'} . ')', $data->{'crash'});
+  my $result = $query->fetchrow_hashref;
+  print $json->encode($result);
+  }
+
+
+if ($parameters->{'query'} eq 'change_crash_rotation') {
+  my $data = $json->decode($parameters->{'command'});
+  my $sql = "update diagram_crashes set angle = ? where crash_id = ? returning crash_id";
+  my $query = $pg->prepare($sql);
+  $query->execute($data->{'angle'}, $data->{'crash'});
+  my $result = $query->fetchrow_hashref;
+  print $json->encode($result);
+  }
+
+
+if ($parameters->{'query'} eq 'crash_details') {
+  my $data = $json->decode($parameters->{'command'});
+  my $sql = "select crash_id, cr3_file_metadata->>'diagram_s3_file' as diagram, investigator_narrative_ocr as narrative
+  from atd_txdot_crashes 
+  where crash_id = ?";
+  my $query = $pg_dts->prepare($sql);
+  $query->execute($data->{'crash_id'});
+  my $crash = $query->fetchrow_hashref;
+
+
+  my $sql = "select units.unit_nbr, unit_desc.veh_unit_desc_desc as units
+  from atd_txdot_units units 
+  join atd_txdot__veh_unit_desc_lkp unit_desc on (units.unit_desc_id = unit_desc.veh_unit_desc_id)
+  where units.crash_id = ?
+  order by units.unit_nbr asc";
+  my $query = $pg_dts->prepare($sql);
+  $query->execute($data->{'crash_id'});
+  my @units = ();
+  while (my $unit = $query->fetchrow_hashref)
+    { 
+    my $sql = "select pp.unit_nbr, pp.prsn_nbr, injurys.injry_sev_desc as person
+    from atd_txdot_primaryperson pp
+    join atd_txdot__injry_sev_lkp injurys on (pp.prsn_injry_sev_id = injurys.injry_sev_id)
+    where pp.crash_id = ?
+    and pp.unit_nbr = ?
+      union all 
+    select p.unit_nbr, p.prsn_nbr, injurys.injry_sev_desc as person
+    from atd_txdot_person p
+    join atd_txdot__injry_sev_lkp injurys on (p.prsn_injry_sev_id = injurys.injry_sev_id)
+    where p.crash_id = ?
+    and p.unit_nbr = ?
+    order by unit_nbr asc, prsn_nbr asc";
+    my $query = $pg_dts->prepare($sql);
+    $query->execute($data->{'crash_id'}, $unit->{'unit_nbr'}, $data->{'crash_id'}, $unit->{'unit_nbr'});
+    my @persons = ();
+    while (my $person = $query->fetchrow_hashref)
+      {
+      push @persons, $person;
+      }
+    $unit->{'persons'} = \@persons;
+    #print STDERR Dumper \@persons;
+    push @units, $unit; 
+    }
+
+  #print STDERR Dumper \@units;
+  $crash->{'units'} = \@units;
+  print $json->encode($crash);
+  }
+
+
+if (0 and $parameters->{'query'} eq 'add_remove_crash') { # switching to a hide_crash boolean
+  my $data = $json->decode($parameters->{'command'});
+  #print STDERR Dumper $data;
+  if ($data->{'action'} eq 'add') {
+    my $sql = "insert into diagram_crashes (crash_id) values (?)";
+    my $query = $pg->prepare($sql);
+    $query->execute($data->{'crash'});
+    }
+  elsif ($data->{'action'} eq 'remove') {
+    my $sql = "delete from diagram_crashes where crash_id = ?";
+    my $query = $pg->prepare($sql);
+    $query->execute($data->{'crash'});
+    #my $sql = "delete from diagram_crashes where session = ? and crash_id = ?";
+    #my $query = $pg->prepare($sql);
+    #$query->execute($data->{'session'}, $data->{'crash'});
+    }
+  }
+
+
+if ($parameters->{'query'} eq 'begin_diagram') {
+  my $crashes = $json->decode($parameters->{'crashes'});
+  #print STDERR Dumper $crashes;
+  #my $sql = "insert into diagram_sessions (creator) values (?) returning id";
+  #my $query = $pg->prepare($sql);
+  #$query->execute(1);
+  #my ($session_id) = $query->fetchrow_array;
+  #print STDERR "New Session ID: ", $session_id, "\n";
+  foreach my $crash (@{$crashes}) {
+    my $sql = "insert into diagram_crashes (crash_id) values (?) ON CONFLICT DO NOTHING";
+    #print STDERR $sql, " ", $crash, "\n";
+    my $query = $pg->prepare($sql);
+    $query->execute($crash);
+    }
+  my $response = { session_id => 'in-session' };
+  print $json->encode($response);
+  }
+
+
+if ($parameters->{'query'} eq 'map_get_crash_locations') {
+  my @query_parameters = ();
+  my @sql_clauses = ();
+
+  if ($parameters->{'polygon_filter'} && $json->decode($parameters->{'polygon_filter'})->{'geometry'}) {
+    push @query_parameters, $json->encode($json->decode($parameters->{'polygon_filter'})->{'geometry'});
+    push @sql_clauses, "ST_Contains(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(?), 3857), 4326), position)" 
+    }
+
+  push @query_parameters, @{$json->decode($parameters->{'extent'})};
+  push @query_parameters, $parameters->{'start_date'} if $parameters->{'start_date'};
+  push @query_parameters, $parameters->{'end_date'} if $parameters->{'end_date'};
+
+  push @sql_clauses, "ST_Contains(ST_Transform(ST_MakeEnvelope(?, ?, ?, ?, 3857), 4326), position)";
+  push @sql_clauses, "crash_date >= ?" if $parameters->{'start_date'};
+  push @sql_clauses, "crash_date <= ?" if $parameters->{'end_date'};
+  push @sql_clauses, "location_id is not null";
+
+  my @mainlane_query_parameters = ();
+  my @mainlane_sql_clauses = ();
+
+  if ($parameters->{'polygon_filter'} && $json->decode($parameters->{'polygon_filter'})->{'geometry'}) {
+    push @mainlane_query_parameters, $json->encode($json->decode($parameters->{'polygon_filter'})->{'geometry'});
+    push @mainlane_sql_clauses, "ST_Contains(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(?), 3857), 4326), position)" 
+    }
+
+  push @mainlane_query_parameters, @{$json->decode($parameters->{'extent'})};
+  push @mainlane_query_parameters, $parameters->{'start_date'} if $parameters->{'start_date'};
+  push @mainlane_query_parameters, $parameters->{'end_date'} if $parameters->{'end_date'};
+
+  push @mainlane_sql_clauses, "ST_Contains(ST_Transform(ST_MakeEnvelope(?, ?, ?, ?, 3857), 4326), position)";
+  push @mainlane_sql_clauses, "crash_date >= ?" if $parameters->{'start_date'};
+  push @mainlane_sql_clauses, "crash_date <= ?" if $parameters->{'end_date'};
+
+
+  my $sql = "
+  SELECT row_to_json(feature_collection) AS feature_collection_geojson
+   FROM (
+     SELECT 'FeatureCollection' AS type, array_to_json(array_agg(feature)) AS features
+     FROM (
+       SELECT 
+         'Feature' AS type,
+         ST_AsGeoJSON(ST_Transform(atd_txdot_crashes.position, 3857))::json AS geometry,
+         row_to_json((crash_id, crash_date)) AS properties,
+         crash_id as id
+       FROM atd_txdot_crashes 
+       WHERE " . join(" and ", @sql_clauses) . "
+
+       UNION ALL
+
+       SELECT 
+         'Feature' AS type,
+         ST_AsGeoJSON(ST_Transform(cr3_nonproper_crashes_on_mainlane.position, 3857))::json AS geometry,
+         row_to_json((crash_id, crash_date)) AS properties,
+         crash_id as id
+       FROM cr3_nonproper_crashes_on_mainlane
+       WHERE " . join(" and ", @mainlane_sql_clauses) . "
+
+       ) AS feature
+    ) AS feature_collection
+   ";
+
+  #print STDERR $sql, "\n";
+
+  my $query = $pg->prepare($sql);
+  $query->execute(@query_parameters, @mainlane_query_parameters);
+  my ($crashes) = $query->fetchrow_array;
+  #print STDERR $crashes, "\n";
+  print $crashes;
+
+  #'features', json_agg(ST_AsGeoJSON(atd_txdot_crashes.crash_id, ST_Transform(atd_txdot_crashes.position, 3857))::json)
+  #my $sql = "select json_build_object(
+      #'type', 'FeatureCollection',
+      #'features', json_agg(ST_AsGeoJSON(ST_Transform(atd_txdot_crashes.position, 3857), 12)::json)
+      #)
+    #from atd_txdot_crashes
+      #where " .
+      #join(" and ", @sql_clauses);
+
+
+  #print STDERR $sql, "\n";
+  #print STDERR Dumper \@query_parameters;
+
+  #my $query = $pg->prepare($sql);
+  #$query->execute(@query_parameters);
+  #my ($crashes) = $query->fetchrow_array;
+  #print $crashes;
+  }
+
+if ($parameters->{'query'} eq 'table_get_crash_locations') {
+  #print STDERR Dumper $parameters, "\n";
+
+  #select json_build_object(
+  #'crash_id', json_agg(c.crash_id)
+
+  my $crashes = {};
+  $crashes->{'data'} = [];
+
+  if ($parameters->{'zoom'} >= 16) {
+
+  my @query_parameters = ();
+  my @sql_clauses = ();
+
+  if ($parameters->{'polygon_filter'} && $json->decode($parameters->{'polygon_filter'})->{'geometry'})
+    {
+    push @query_parameters, $json->encode($json->decode($parameters->{'polygon_filter'})->{'geometry'});
+    push @sql_clauses, "ST_Contains(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(?), 3857), 4326), position)" 
+    }
+
+  push @query_parameters, @{$json->decode($parameters->{'extent'})};
+  push @query_parameters, $parameters->{'start_date'} if $parameters->{'start_date'};
+  push @query_parameters, $parameters->{'end_date'} if $parameters->{'end_date'};
+
+  push @sql_clauses, "ST_Contains(ST_Transform(ST_MakeEnvelope(?, ?, ?, ?, 3857), 4326), position)";
+  push @sql_clauses, "crash_date >= ?" if $parameters->{'start_date'};
+  push @sql_clauses, "crash_date <= ?" if $parameters->{'end_date'};
+  push @sql_clauses, "location_id is not null";
+
+
+  my @mainlane_query_parameters = ();
+  my @mainlane_sql_clauses = ();
+
+  if ($parameters->{'polygon_filter'} && $json->decode($parameters->{'polygon_filter'})->{'geometry'})
+    {
+    push @mainlane_query_parameters, $json->encode($json->decode($parameters->{'polygon_filter'})->{'geometry'});
+    push @mainlane_sql_clauses, "ST_Contains(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(?), 3857), 4326), position)" 
+    }
+
+  push @mainlane_query_parameters, @{$json->decode($parameters->{'extent'})};
+  push @mainlane_query_parameters, $parameters->{'start_date'} if $parameters->{'start_date'};
+  push @mainlane_query_parameters, $parameters->{'end_date'} if $parameters->{'end_date'};
+
+  push @mainlane_sql_clauses, "ST_Contains(ST_Transform(ST_MakeEnvelope(?, ?, ?, ?, 3857), 4326), position)";
+  push @mainlane_sql_clauses, "crash_date >= ?" if $parameters->{'start_date'};
+  push @mainlane_sql_clauses, "crash_date <= ?" if $parameters->{'end_date'};
+
+  my $sql = "
+      WITH persons AS (
+        select crash_id, prsn_injry_sev_id from atd_txdot_primaryperson
+          UNION ALL
+        select crash_id, prsn_injry_sev_id from atd_txdot_person
+        )
+      select 
+        ST_AsGeoJSON(ST_Transform(c.position, 3857)) as geometry,
+        c.crash_id,
+        c.crash_date as date,
+        ct.collsn_desc as crash_type, 
+        count(p.crash_id) filter (where p.prsn_injry_sev_id = 4) as k,
+        count(p.crash_id) filter (where p.prsn_injry_sev_id = 1) as a,
+        count(p.crash_id) filter (where p.prsn_injry_sev_id = 2) as b,
+        1 as included
+      from atd_txdot_crashes c
+      join atd_txdot__collsn_lkp ct on (c.fhe_collsn_id = ct.collsn_id)
+      left join persons p on (p.crash_id = c.crash_id and p.prsn_injry_sev_id in (4,1,2))
+      where " .  join(" and ", @sql_clauses) . "
+      group by c.crash_id, ct.collsn_desc, ct.collsn_desc
+
+      UNION
+
+      select 
+        ST_AsGeoJSON(ST_Transform(c.position, 3857)) as geometry,
+        c.crash_id,
+        c.crash_date as date,
+        ct.collsn_desc as crash_type, 
+        count(p.crash_id) filter (where p.prsn_injry_sev_id = 4) as k,
+        count(p.crash_id) filter (where p.prsn_injry_sev_id = 1) as a,
+        count(p.crash_id) filter (where p.prsn_injry_sev_id = 2) as b,
+        1 as included
+      from atd_txdot_crashes c
+      join atd_txdot__collsn_lkp ct on (c.fhe_collsn_id = ct.collsn_id)
+      left join persons p on (p.crash_id = c.crash_id and p.prsn_injry_sev_id in (4,1,2))
+      where " .  join(" and ", @mainlane_sql_clauses) . "
+      group by c.crash_id, ct.collsn_desc, ct.collsn_desc
+      ";
+
+           #and ST_Contains(ST_Transform(ST_MakeEnvelope(?, ?, ?, ?, 3857), 4326), position)" . 
+            #($parameters->{'start_date'} ? ' and crash_date >= ?' : '') .
+            #($parameters->{'end_date'} ? ' and crash_date <= ?' : '') .
+
+    #print STDERR $sql, "\n";
+    #print STDERR Dumper \@query_parameters;
+
+    my $query = $pg->prepare($sql);
+    $query->execute(@query_parameters, @mainlane_query_parameters);
+    while (my $crash = $query->fetchrow_hashref)
+      {
+      my $sql = "select c.angle, c.icon, ST_X(geometry) as x, ST_Y(geometry) as y, hide_crash
+        from diagram_crashes c
+        where 1 = 1
+        and c.crash_id = ?
+        and (c.geometry is not null OR c.hide_crash = 1)
+        limit 1";
+      my $query = $pg->prepare($sql);
+      $query->execute($crash->{'crash_id'});
+      my $crash_icon_data = $query->fetchrow_hashref;
+      #if ($crash->{'crash_id'} == 17920352)
+        #{
+        #print STDERR "Here's the crash:\n";
+        #print STDERR Dumper $crash_icon_data 
+        #}
+      $crash->{'has_adjusted_location'} = 1 if $crash_icon_data->{'y'}; 
+      $crash->{'hide_crash'} = $crash_icon_data->{'hide_crash'}; 
+
+      #print STDERR Dumper $crash_icon_data if $crash_icon_data->{'y'};
+
+      push @{$crashes->{'data'}}, $crash; 
+      }
+    }
+
+  print $json->encode($crashes);
+  }
+
+
+
+sub get_features_as_object {
+  my $sql = "
+	   select crash_id, ST_AsGeoJSON(position) as geojson
+	   from atd_txdot_crashes 
+	   where ST_Contains(ST_MakeEnvelope(-97.74641667355984,30.27293840856754,-97.74113136690703,30.27854100747829, 4326), position)
+     ";
+  my $query = $pg->prepare($sql);
+  $query->execute();
+  my %crash_payload = ();
+  while (my $crash = $query->fetchrow_hashref)
+    {
+    my $payload = $json->decode($crash->{'geojson'});
+    $crash_payload{$crash->{'crash_id'}} = $payload;
+    }
+
+  #print Dumper \%crash_payload;
+  print $json->encode(\%crash_payload);
+  }
