@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-COPY ./vimrc /root/.vimrc
+#COPY ./vimrc /root/.vimrc
 RUN apt-get update
 RUN apt-get -y upgrade
 RUN apt-get install -y tzdata
