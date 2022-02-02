@@ -4,6 +4,7 @@ utilities/tmp/*
 !utilities/tmp/README.md
 utilities/diagram_data/*
 !utilities/diagram_data/README.md
+*.qgs~
 
 # Vim stuff
 
