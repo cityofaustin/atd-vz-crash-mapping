@@ -17,6 +17,6 @@ RUN apt-get install -y apache2 libdbi-perl libdbd-pg-perl libjson-perl
 #COPY ./diagrams /usr/lib/cgi-bin/
 #COPY ./diagram_icons /var/www/html/diagram_icons
 #COPY ./white_tile.jpg /var/www/html/white_tile.jpg
-#COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod cgid
 RUN a2enmod headers
