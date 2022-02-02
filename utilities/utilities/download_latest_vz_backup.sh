@@ -1,7 +1,7 @@
 #!/bin/bash
 
 FILE_LOCATION="/root/tmp/atd_vz_data-full.sql.gz";
-declare -i TOO_OLD_AGE=24*60*60; # one day
+declare -i TOO_OLD_AGE=28*60*60; # one day
 
 echo "Inspecting $FILE_LOCATION";
 
