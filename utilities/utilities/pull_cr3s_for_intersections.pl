@@ -12,7 +12,6 @@ chomp($pwd);
 
 my @aois = (44);
 
-my $sql = "select * from diagram_aoi where id not in (28,27,26,25,  34,33,32,31,  35)";
 my $sql = "select * from diagram_aoi where id in (" . join (',', @aois) . ")";
 my $query = $pg->prepare($sql);
 $query->execute();
@@ -22,7 +21,6 @@ while (my $aoi = $query->fetchrow_hashref)
              from diagram_intersections i
              join diagram_aoi a on (ST_Intersects(a.geometry, i.geometry))
              where 
-             --a.id not in (28,27,26,25,  34,33,32,31,  35)
              a.id in (" . join (',', @aois) . ")
              and a.id = ?";
   my $query = $pg->prepare($sql);
