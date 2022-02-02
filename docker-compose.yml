@@ -11,6 +11,7 @@ services:
       - ./utilities/utilities:/root/utilities
       - ./utilities/tmp:/root/tmp
       - ./utilities/diagram_data:/root/diagram_data
+      - ./utilities/CR3s_and_Spreadsheets:/root/CR3s_and_Spreadsheets
 
   webserver:
     container_name: crash_mapping_webserver
