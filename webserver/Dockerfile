@@ -20,3 +20,4 @@ RUN apt-get install -y apache2 libdbi-perl libdbd-pg-perl libjson-perl
 COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod cgid
 RUN a2enmod headers
+WORKDIR /root/html
