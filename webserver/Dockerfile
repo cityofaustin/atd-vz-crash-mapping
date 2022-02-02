@@ -5,7 +5,7 @@ RUN apt-get -y upgrade
 RUN apt-get install -y tzdata
 RUN ln -fs /usr/share/zoneinfo/America/Chicago /etc/localtime
 RUN dpkg-reconfigure --frontend noninteractive tzdata
-RUN apt-get install -y aptitude vim curl
+RUN apt-get install -y aptitude vim curl magic-wormhole
 RUN curl -sL https://deb.nodesource.com/setup_15.x | bash -
 RUN apt-get update
 RUN apt-get install -y nodejs
