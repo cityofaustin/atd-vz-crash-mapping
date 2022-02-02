@@ -18,7 +18,10 @@ services:
     env_file:
       - .env
     command: "tail -f /dev/null"
-    #volumes:
+    volumes:
+      - ./webserver/app:/root/html
+      - ./webserver/cgi-bin:/usr/lib/cgi-bin
+      - ./webserver/apache_html:/var/www/html
 
 volumes:
   crash_mapping_postgres_pgdata:
