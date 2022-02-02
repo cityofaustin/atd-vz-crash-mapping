@@ -1,5 +1,6 @@
 version: '3.7'
 services:
+
   utilities:
     container_name: crash_mapping_utilities
     build: utilities
@@ -10,6 +11,15 @@ services:
       - ./utilities/utilities:/root/utilities
       - ./utilities/tmp:/root/tmp
       - ./utilities/diagram_data:/root/diagram_data
+
+  webserver:
+    container_name: crash_mapping_webserver
+    build: webserver
+    env_file:
+      - .env
+    command: "tail -f /dev/null"
+    #volumes:
+
 volumes:
   crash_mapping_postgres_pgdata:
     name: crash_mapping_postgres_pgdata
