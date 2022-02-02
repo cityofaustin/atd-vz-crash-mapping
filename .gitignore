@@ -8,6 +8,10 @@ utilities/CR3s_and_Spreadsheets/CR3s/*
 utilities/CR3s_and_Spreadsheets/Spreadsheets/*
 !utilities/CR3s_and_Spreadsheets/CR3s/README.md
 !utilities/CR3s_and_Spreadsheets/Spreadsheets/README.md
+webserver/app/.cache/*
+webserver/app/dist/*
+webserver/app/node_modules/*
+utilities/utilities/crash_diagram_icon_exploder/diagram_icons/*
 *.qgs~
 
 # Vim stuff
