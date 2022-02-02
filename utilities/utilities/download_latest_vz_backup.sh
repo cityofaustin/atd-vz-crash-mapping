@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/bash
 
 FILE_LOCATION="/root/tmp/atd_vz_data-full.sql.gz";
 declare -i TOO_OLD_AGE=28*60*60; # one day
