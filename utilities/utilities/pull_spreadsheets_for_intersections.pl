@@ -9,7 +9,7 @@ use Excel::Writer::XLSX;
 
 my @aois = (44);
 
-my $pg = DBI->connect("DBI:Pg:dbname=diagrams;host=pennybacker;port=5432", 'frank', '', {RaiseError => 1});
+my $pg  = DBI->connect("DBI:Pg:dbname=" . $ENV{'POSTGRES_DB'} . ";host=" . $ENV{'POSTGRES_HOSTNAME'} . ";port=" . $ENV{'POSTGRES_PORT'}, $ENV{'POSTGRES_USER'}, $ENV{'POSTGRES_PASSWORD'}, {RaiseError => 1});
 
 my $pwd = `pwd`;
 chomp($pwd);
