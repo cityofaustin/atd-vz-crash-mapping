@@ -22,6 +22,9 @@ services:
       - ./webserver/app:/root/html
       - ./webserver/cgi-bin:/usr/lib/cgi-bin
       - ./webserver/apache_html:/var/www/html
+    ports:
+      # be careful to not expose these resources on the COA network
+      - 127.0.0.1:80:80
 
 volumes:
   crash_mapping_postgres_pgdata:
