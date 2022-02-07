@@ -14,7 +14,7 @@ echo 'create database atd_vz_data' | psql -U $POSTGRES_USER -h $POSTGRES_HOSTNAM
 echo 'create extension postgis' | psql -U $POSTGRES_USER -h $POSTGRES_HOSTNAME $POSTGRES_DB
 echo 'create extension plperl' | psql -U $POSTGRES_USER -h $POSTGRES_HOSTNAME $POSTGRES_DB
 
-zcat /root/tmp/atd_vz_data-full.sql.gz | /root/utilities/skip_changelog_out_of_db_archive.pl | psql -U $POSTGRES_USER -h $POSTGRES_HOSTNAME $POSTGRES_DB
+zcat /root/tmp/atd_vz_data-full.sql.gz | perl /root/utilities/skip_changelog_out_of_db_archive.pl | psql -U $POSTGRES_USER -h $POSTGRES_HOSTNAME $POSTGRES_DB
 
 cat /root/utilities/db_schema/functions.sql | psql -U $POSTGRES_USER -h $POSTGRES_HOSTNAME $POSTGRES_DB 
 cat /root/diagram_data/diagram_$DATE.sql | psql -U $POSTGRES_USER -h $POSTGRES_HOSTNAME $POSTGRES_DB 
