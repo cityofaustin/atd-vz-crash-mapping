@@ -6,8 +6,8 @@ use CGI;
 use Data::Dumper;
 use DBI;
 
-my $pg_dts  = DBI->connect("DBI:Pg:dbname=" . $ENV{'DTS_RR_DB'} . ";host=" . $ENV{'DTS_RR_DB_HOST'} . ";port=" . $ENV{'DTS_RR_DB_PORT'}, $ENV{'DTS_RR_DB_USERNAME'}, $ENV{'DTS_RR_DB_PASSWORD'}, {RaiseError => 1});
-my $pg  = DBI->connect("DBI:Pg:dbname=" . $ENV{'LOCAL_DEV_DB'} . ";host=" . $ENV{'LOCAL_DEV_DB_HOST'} . ";port=" . $ENV{'LOCAL_DEV_DB_PORT'}, $ENV{'LOCAL_DEV_DB_USERNAME'}, $ENV{'LOCAL_DEV_DB_PASSWORD'}, {RaiseError => 1});
+my $pg_dts  = DBI->connect("DBI:Pg:dbname=" . $ENV{'VZDB_RR_DB'} . ";host=" . $ENV{'VZDB_RR_DB_HOST'} . ";port=" . $ENV{'VZDB_RR_DB_PORT'}, $ENV{'VZDB_RR_DB_USERNAME'}, $ENV{'VZDB_RR_DB_PASSWORD'}, {RaiseError => 1});
+my $pg  = DBI->connect("DBI:Pg:dbname=" . $ENV{'POSTGRES_DB'} . ";host=" . $ENV{'POSTGRES_HOSTNAME'} . ";port=" . $ENV{'POSTGRES_PORT'}, $ENV{'POSTGRES_USER'}, $ENV{'POSTGRES_PASSWORD'}, {RaiseError => 1});
 
 my $sql = "select crash_id, latitude_primary, longitude_primary, ST_AsText(position) as location from atd_txdot_crashes where position is not null order by crash_date desc";
 my $query = $pg_dts->prepare($sql);
