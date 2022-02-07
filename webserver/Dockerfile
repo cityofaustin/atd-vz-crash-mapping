@@ -9,7 +9,7 @@ RUN apt-get install -y aptitude vim curl magic-wormhole
 RUN curl -sL https://deb.nodesource.com/setup_15.x | bash -
 RUN apt-get update
 RUN apt-get install -y nodejs
-RUN apt-get install -y gcc g++ make
+RUN apt-get install -y gcc g++ make dos2unix
 RUN npm install --global yarn
 RUN yarn global add parcel-bundler
 RUN apt-get install -y apache2 libdbi-perl libdbd-pg-perl libjson-perl
