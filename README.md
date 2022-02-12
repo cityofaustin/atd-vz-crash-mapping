@@ -10,9 +10,9 @@ This is a docker stack which includes three containers. They are:
 2) A webserver, running Apache to provide static image assets and to execute a Perl script exposed via a CGI. 
 3) A utility server, which is used to execute scripts that play a part of the diagramming process.
 
-## What is the big picture?
-
 ## How do you use it?
+
+1) The first step is to get the 3 images running. This may be possible via the Docker desktop application, or you can use an available terminal to 1) change directories to the root of the repository, 2) run `docker-compose -f ./docker-compose.yml -f docker-compose.arm64.yml up;`.
 
 
 ## Useful commands
