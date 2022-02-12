@@ -12,7 +12,9 @@ This is a docker stack which includes three containers. They are:
 
 ## How do you use it?
 
-1) The first step is to get the 3 images running. This may be possible via the Docker desktop application, or you can use an available terminal to 1) change directories to the root of the repository, 2) run `docker-compose -f ./docker-compose.yml -f docker-compose.arm64.yml up;`.
+1) Get the 3 images running. This may be possible via the Docker desktop application, or you can use an available terminal to 1) change directories to the root of the repository, 2) run `docker-compose -f ./docker-compose.yml -f docker-compose.arm64.yml up;`.
+1) Start the webserver and web app.
+    1) Either use the `CLI` button on docker desktop on the webserver container or `docker exec -it crash_mapping_webserver bash;` and then you'll be dumped into a shell on the webserver. Run `bash` if needed. `apachectl start` to start the apache process. `apachectl restart` can be used if you find that the CGI endpoint is not responding. `yarn run dev` will then start the JS mapping application. 
 
 
 ## Useful commands
