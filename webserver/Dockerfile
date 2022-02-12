@@ -13,10 +13,6 @@ RUN apt-get install -y gcc g++ make dos2unix
 RUN npm install --global yarn
 RUN yarn global add parcel-bundler
 RUN apt-get install -y apache2 libdbi-perl libdbd-pg-perl libjson-perl
-#COPY ./app /root/html/
-#COPY ./diagrams /usr/lib/cgi-bin/
-#COPY ./diagram_icons /var/www/html/diagram_icons
-#COPY ./white_tile.jpg /var/www/html/white_tile.jpg
 COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod cgid
 RUN a2enmod headers
