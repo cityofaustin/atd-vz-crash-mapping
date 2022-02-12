@@ -16,7 +16,7 @@ This is a docker stack which includes three containers. They are:
 1) Get the 3 images running. This may be possible via the Docker desktop application, or you can use an available terminal to 1) change directories to the root of the repository, 2) run `docker-compose -f ./docker-compose.yml -f docker-compose.x86_64.yml up;`.
 1) Start the webserver and web app.
     1) Either use the `CLI` button on docker desktop on the webserver container or `docker exec -it crash_mapping_webserver bash;` and then you'll be dumped into a shell on the webserver. Run `bash` if needed. `apachectl start` to start the apache process. `apachectl restart` can be used if you find that the CGI endpoint is not responding. `yarn run dev` will then start the JS mapping application. Leave this terminal spinning.
-1) Open a utility terminal. Use the database `CLI` button or `docker exec -it crash_mapping_utilities bash;` 
+1) Open a utility terminal. Use the utility container `CLI` button or `docker exec -it crash_mapping_utilities bash;` 
 1) Execute `pull_vz_backup_populate_local_db.sh`. This should backup the local diagramming data, drop the database, download the latest backup, rebuild the database, restore the diagramming data. This is a non-trivial disk operation and can take a while.
     1) The previous steps are all that are required to provide the user a copy of the VZ database with full administrative rights local to their machine. This can be used for analysis other reasons. The database is available on localhost on port 5432. The username and password are set in the `.env` file you must create in the root of your checkout.
 1) Start QGIS and open your latest project file.
