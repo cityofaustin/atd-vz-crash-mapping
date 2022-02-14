@@ -17,7 +17,7 @@ This is a docker stack which includes three containers. They are:
 3) Start the webserver and web app.
     1) Either use the `CLI` button on docker desktop on the webserver container or `docker exec -it crash_mapping_webserver bash;` and then you'll be dumped into a shell on the webserver. Run `bash` if needed. `apachectl start` to start the apache process. `apachectl restart` can be used if you find that the CGI endpoint is not responding. `yarn run dev` will then start the JS mapping application. Leave this terminal spinning.
 4) Open a utility terminal. Use the utility container `CLI` button or `docker exec -it crash_mapping_utilities bash;` 
-5) Execute `pull_vz_backup_populate_local_db.sh`. This should backup the local diagramming data, drop the database, download the latest backup, rebuild the database, restore the diagramming data. This is a non-trivial disk operation and can take a while.
+5) Execute `pull_vz_backup_populate_local_db.sh;`. This should backup the local diagramming data, drop the database, download the latest backup, rebuild the database, restore the diagramming data. This is a non-trivial disk operation and can take a while.
     1) The previous steps are all that are required to provide the user a copy of the VZ database with full administrative rights local to their machine. This can be used for analysis other reasons. The database is available on localhost on port 5432. The username and password are set in the `.env` file you must create in the root of your checkout.
 6) Start QGIS and open your latest project file.
 7) In the layer which points at your local `AOI (Entire diagram extents)` `table`, create a new feature which defines the whole intersection, containing any crashes of interest, which you wish to diagram. Be liberal in the extents; include sidewalks and driveways which have crashes on them. Any crash outside of this feature will not be considered during the rest of this process. Give the polygon a reasonable value for the 'Name' attribute when saving it. Toggle out of editing mode and note the ID of the new AOI created using the feature inspect tool.
@@ -33,7 +33,8 @@ join diagram_aoi aoi on ( 1 = 1
     ) 
 ```
 10) Export these results out as a CSV file. Open this file, and use the following excel formula to create a list of hyperlinks to the Vision Zero Editor (VZE), one for each crash: `=HYPERLINK(CONCAT("https://visionzero.austin.gov/editor/#/crashes/",A1), A1)`
-11) Visit each crash in the VZE and geolocate the crash as accurately as possible.
+11) Visit each crash in the VZE and geolocate the crash as accurately as possible. If needed, maintain a list of crash IDs which will need to be excluded from this crash diagram.
+12) Return to your shell on the utility container or open another. Execute `sync_locations_from_vzdb_to_diagrams.pl;` to pull all geolocated crash locations from the VZDB to your local copy.
 
 ## Useful commands
 
