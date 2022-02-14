@@ -43,8 +43,12 @@ join diagram_aoi aoi on ( 1 = 1
 18) Return to the QGIS application and turn on the `Mapped crashes with diagram symbology` layer. You should see the same diagram symbols that you assigned for each crash in the correct location. 
 19) Copy the AOI feature for this location to the clipboard. Turn on and edit the `Approaches` layer and paste in this feature as a new entry.
 20) Utilize the `Split Features` tool in the `Advanced Digitizing Toolbar` to split this feature up into logical approaches. Diagram inset tables will be computed per approach. The area covered by the approaches should cover exactly the area of covered by the area of interest without overlapping each other.
-
-
+21) Return to the database client, and execute the following queries:
+```
+refresh materialized view diagram_aoi_with_labels;
+refresh materialized view diagram_intersections_with_labels;
+```
+22) Return to QGIS after the above queries have completed and turn off the `AOI (Entire Diagram extents)` and `Approaches` layer. In the `Crash Diagrams` group, turn on `AOI (Dashed Outlines)`. 
 
 ## Useful commands
 
