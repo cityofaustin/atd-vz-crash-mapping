@@ -67,6 +67,9 @@ refresh materialized view diagram_intersections_with_labels;
     3)  `Approaches (With table attribute)` as `intersections`
 33) Open ArcGIS Pro, load these shapefiles, an update the AGOL resource which is used to provide a locator map linking symbols to crash IDs.
 34) 
+
+## Useful directories bind-mounted to the Docker containers
+
 ## Useful commands
 
 * `vim Makefile;` Read common recipes 
