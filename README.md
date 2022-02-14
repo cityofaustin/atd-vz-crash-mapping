@@ -57,6 +57,9 @@ refresh materialized view diagram_intersections_with_labels;
 25) Select the map object and `Lock layers` and `Lock styles for layers` so that the dashed AOI outline is visible with crash diagram symbols shown for crashes. 
 26) Return to the primary QGIS window and use the feature inspection tool to look for the `overview_table` attribute on the AOI layer named `AOI (Dashed Outlines)`. Copy this attribute value.
 27) On the layout page, add a new text box in an open area of the map and paste in this value. Select `Render as HTML`. 
+28) In the main QGIS window, turn off the `AOI (Dashed Outlines)` layer and turn on the `Approaches (With table attribute)` layer. 
+29) For each approach, use the inspection tool to copy the attribute `approach_table`. Returning to the layout window, create a new text box for each approach and paste in the `approach_table` attribute, clicking `Render as HTML`. Arrange these inset tables near the clusters of crashes which they represent.
+30) For the above steps, depending on the extent size of the AOI, it may be needed to add additional pages for approaches or groups of approaches. The driving consideration for the addition of new pages is the relative scale of the crash symbols to the viewport of the map. If they are not sufficiently large to be useful, additional pages at tighter zoom levels are needed.
 
 ## Useful commands
 
