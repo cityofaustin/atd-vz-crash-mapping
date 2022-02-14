@@ -39,6 +39,11 @@ join diagram_aoi aoi on ( 1 = 1
 14) Zoom and pan the map to cover the approximate extent of the area of interest, erring on the side of being slight too zoomed out. Note: the AOI shapes are not drawn on the map.
 15) Click the `Draw Shape` button. Crashes outside the area of interest should no longer be visible on the map, leaving only crashes which are contained by the area of interest and within the time frame specified at the top of the tool. 
 16) Click the `Diagram` button. Crashes should transform from a point symbol to a crash diagramming symbol. They should be colored by injury severity. 
+17) Move, rotate and change symbols of each crash into the location you would like them to appear on the map.
+18) Return to the QGIS application and turn on the `Mapped crashes with diagram symbology` layer. You should see the same diagram symbols that you assigned for each crash in the correct location. 
+19) Copy the AOI feature for this location to the clipboard. Turn on and edit the `Approaches` layer and paste in this feature as a new entry.
+20) Utilize the `Split Features` tool in the `Advanced Digitizing Toolbar` to split this feature up into logical approaches. Diagram inset tables will be computed per approach. The area covered by the approaches should cover exactly the area of covered by the area of interest without overlapping each other.
+
 
 
 ## Useful commands
