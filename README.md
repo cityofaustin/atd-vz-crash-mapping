@@ -49,6 +49,14 @@ refresh materialized view diagram_aoi_with_labels;
 refresh materialized view diagram_intersections_with_labels;
 ```
 22) Return to QGIS after the above queries have completed and turn off the `AOI (Entire Diagram extents)` and `Approaches` layer. In the `Crash Diagrams` group, turn on `AOI (Dashed Outlines)`. 
+23) Open the QGIS map layout tool. Add a new US Letter head page and remove the default A4 page. Choose portrait or landscape based on the general aspect ratio of the AOI being mapped. Choose an appropriate map rotation to best fit the AOI to the map.
+24) Add the basic map components as desired generally including:
+    1)  North arrow
+    2)  Scale bar
+    3)  Title including dates drawn from the web application
+25) Select the map object and `Lock layers` and `Lock styles for layers` so that the dashed AOI outline is visible with crash diagram symbols shown for crashes. 
+26) Return to the primary QGIS window and use the feature inspection tool to look for the `overview_table` attribute on the AOI layer named `AOI (Dashed Outlines)`. Copy this attribute value.
+27) On the layout page, add a new text box in an open area of the map and paste in this value. Select `Render as HTML`. 
 
 ## Useful commands
 
