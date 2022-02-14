@@ -20,7 +20,7 @@ This is a docker stack which includes three containers. They are:
 1) Execute `pull_vz_backup_populate_local_db.sh`. This should backup the local diagramming data, drop the database, download the latest backup, rebuild the database, restore the diagramming data. This is a non-trivial disk operation and can take a while.
     1) The previous steps are all that are required to provide the user a copy of the VZ database with full administrative rights local to their machine. This can be used for analysis other reasons. The database is available on localhost on port 5432. The username and password are set in the `.env` file you must create in the root of your checkout.
 1) Start QGIS and open your latest project file.
-1) In the layer which points at your local `AOI` `table`, create a new feature which defines the whole intersection, containing any crashes of interest, which you wish to diagram. Be liberal in the extents, include sidewalks and driveways which have crashes on them. Any crash outside of this feature will not be considered during the rest of this process.
+1) In the layer which points at your local `AOI (Entire diagram extents)` `table`, create a new feature which defines the whole intersection, containing any crashes of interest, which you wish to diagram. Be liberal in the extents; include sidewalks and driveways which have crashes on them. Any crash outside of this feature will not be considered during the rest of this process. Give the polygon a reasonable value for the 'Name' attribute when saving it.
 
 
 ## Useful commands
