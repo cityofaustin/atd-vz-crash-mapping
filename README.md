@@ -65,8 +65,10 @@ refresh materialized view diagram_intersections_with_labels;
     1)  `Mapped Crashes with diagram symbology` as `crashes`
     2)  `AOI (Dashed outlines)` as `aoi`
     3)  `Approaches (With table attribute)` as `intersections`
-33) Open ArcGIS Pro, load these shapefiles, an update the AGOL resource which is used to provide a locator map linking symbols to crash IDs.
-34) 
+33) Open ArcGIS Pro, load these shapefiles, to update the AGOL resource which is used to provide a locator map linking symbols to crash IDs.
+34) Return to the terminal for the utility container. Execute `pull_cr3s_for_intersections.pl;` to retrieve CR3 PDFs from S3 for crashes organized by approach ID.
+35) Execute `pull_spreadsheets_for_intersections.pl;`  to create XLSX files containing crash data organized by approach ID.
+36) Collect the PDF, shapefiles, and directories containing XLSX files and CR3 PDFs into a unified folder. This folder is the final product.
 
 ## Useful directories bind-mounted to the Docker containers
 
