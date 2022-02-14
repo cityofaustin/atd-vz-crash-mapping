@@ -74,7 +74,9 @@ refresh materialized view diagram_intersections_with_labels;
 
 The following folders are shared between the running docker containers and the local host file system. All paths are relative to the root of the git checkout for `atd-vz-crash-mapping`.
 
-* 
+* utilities/utilities: Primary collection of utility scripts
+* utilities/diagram_data: Location where `pg_dump` data containing diagram data is stored. These files are written out by `pull_vz_backup_populate_local_db.sh`. These are functionally backups of data that not contained within the primary VZDB.
+
 ## Useful commands
 
 * `vim Makefile;` Read common recipes 
