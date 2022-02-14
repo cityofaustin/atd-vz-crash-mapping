@@ -20,7 +20,7 @@ This is a docker stack which includes three containers. They are:
 5) Execute `pull_vz_backup_populate_local_db.sh;`. This should backup the local diagramming data, drop the database, download the latest backup, rebuild the database, restore the diagramming data. This is a non-trivial disk operation and can take a while.
     1) The previous steps are all that are required to provide the user a copy of the VZ database with full administrative rights local to their machine. This can be used for analysis other reasons. The database is available on localhost on port 5432. The username and password are set in the `.env` file you must create in the root of your checkout.
 6) Start QGIS and open your latest project file.
-7) In the layer which points at your local `AOI (Entire diagram extents)` `table`, create a new feature which defines the whole intersection, containing any crashes of interest, which you wish to diagram. Be liberal in the extents; include sidewalks and driveways which have crashes on them. Any crash outside of this feature will not be considered during the rest of this process. Give the polygon a reasonable value for the 'Name' attribute when saving it. Toggle out of editing mode and note the ID of the new AOI created using the feature inspect tool.
+7) In the layer which points at your local `AOI (Entire diagram extents)` table, create a new feature which defines the whole intersection, containing any crashes of interest, which you wish to diagram. Be liberal in the extents; include sidewalks and driveways which have crashes on them. Any crash outside of this feature will not be considered during the rest of this process. Give the polygon a reasonable value for the 'Name' attribute when saving it. Toggle out of editing mode and note the ID of the new AOI created using the feature inspect tool.
 8) Open a database client and navigate to a query window so that you can execute SQL queries against the `atd_vz_database`. This database server should be available at `localhost` on port `5432`. The username and password are available in the `.env` file created in the first step.
 9) Execute the following query. Additional columns can be added to suite the needs of person doing crash QA/QC. Be sure to substitute in the ID of the feature you created:
 ```
@@ -35,6 +35,11 @@ join diagram_aoi aoi on ( 1 = 1
 10) Export these results out as a CSV file. Open this file, and use the following excel formula to create a list of hyperlinks to the Vision Zero Editor (VZE), one for each crash: `=HYPERLINK(CONCAT("https://visionzero.austin.gov/editor/#/crashes/",A1), A1)`
 11) Visit each crash in the VZE and geolocate the crash as accurately as possible. If needed, maintain a list of crash IDs which will need to be excluded from this crash diagram.
 12) Return to your shell on the utility container or open another. Execute `sync_locations_from_vzdb_to_diagrams.pl;` to pull all geolocated crash locations from the VZDB to your local copy.
+13) Visit http://localhost:1234?aoi=<AOI_ID>, being sure to substitute in the ID of the area of interest created above.
+14) Zoom and pan the map to cover the approximate extent of the area of interest, erring on the side of being slight too zoomed out. Note: the AOI shapes are not drawn on the map.
+15) Click the `Draw Shape` button. Crashes outside the area of interest should no longer be visible on the map, leaving only crashes which are contained by the area of interest and within the time frame specified at the top of the tool. 
+16) Click the `Diagram` button. Crashes should transform from a point symbol to a crash diagramming symbol. They should be colored by injury severity. 
+
 
 ## Useful commands
 
