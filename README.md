@@ -72,6 +72,9 @@ refresh materialized view diagram_intersections_with_labels;
 
 ## Useful directories bind-mounted to the Docker containers
 
+The following folders are shared between the running docker containers and the local host file system. All paths are relative to the root of the git checkout for `atd-vz-crash-mapping`.
+
+* 
 ## Useful commands
 
 * `vim Makefile;` Read common recipes 
