@@ -77,6 +77,6 @@ The following folders are shared between the running docker containers and the l
 * utilities/utilities: Primary collection of utility scripts
 * utilities/diagram_data: Location where `pg_dump` data containing diagram data is stored. These files are written out by `pull_vz_backup_populate_local_db.sh`. These are functionally backups of data that not contained within the primary VZDB.
 * utilities/CR3s_and_Spreadsheets: Location where `pull_cr3s_for_intersections.pl` and `pull_spreadsheets_for_intersections.pl` write out the spreadsheets and copies of the CR3 PDFs
-* webserver/app: Javascript application
+* webserver/app: JavaScript application
 * webserver/cgi-bin: `cgi-bin` directory containing endpoint for crash data for JS application
 * webserver/apache_html: Folder containing static assets served by apache, most notably the crash symbols.
