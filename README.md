@@ -60,7 +60,13 @@ refresh materialized view diagram_intersections_with_labels;
 28) In the main QGIS window, turn off the `AOI (Dashed Outlines)` layer and turn on the `Approaches (With table attribute)` layer. 
 29) For each approach, use the inspection tool to copy the attribute `approach_table`. Returning to the layout window, create a new text box for each approach and paste in the `approach_table` attribute, clicking `Render as HTML`. Arrange these inset tables near the clusters of crashes which they represent.
 30) For the above steps, depending on the extent size of the AOI, it may be needed to add additional pages for approaches or groups of approaches. The driving consideration for the addition of new pages is the relative scale of the crash symbols to the viewport of the map. If they are not sufficiently large to be useful, additional pages at tighter zoom levels are needed.
-
+31) When the layout is complete, render the map or maps out as a PDF document. Close the QGIS layout tool.
+32) Save 3 shapefiles out to disk:
+    1)  `Mapped Crashes with diagram symbology` as `crashes`
+    2)  `AOI (Dashed outlines)` as `aoi`
+    3)  `Approaches (With table attribute)` as `intersections`
+33) Open ArcGIS Pro, load these shapefiles, an update the AGOL resource which is used to provide a locator map linking symbols to crash IDs.
+34) 
 ## Useful commands
 
 * `vim Makefile;` Read common recipes 
